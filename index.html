@@ -18,24 +18,32 @@ function isvowel(a) {
 	return false;
 }
 
-function reduce2ndvowel(a) {
+function reduce2ndvowel(a, i, e) {
 	var c = 0;
 
 	for(var b = a.length - 1; b >= 0; b--) {
 		if(isvowel(a[b])) {
 			c++;
-			if(c == 2 && a[b] != "I")
+			if(c == 2 && a[b] != "I" && a[b] != "u")
 				a = a.substr(0, b) + "|" + a.substr(b + 1);
 		}
 	}
 
 	c = 0;
 
+	if(i == undefined)
+		i = "a";
+
+	if(e == undefined)
+		e = "a";
+
 	for(var b = a.length - 1; b >= 0; b--) {
 		if(isvowel(a[b])) {
 			c++;
 			if(c == 3 && a[b] == "I")
-				a = a.substr(0, b) + "a" + a.substr(b + 1);
+				a = a.substr(0, b) + i + a.substr(b + 1);
+			else if(c == 3 && a[b] == "E")
+				a = a.substr(0, b) + e + a.substr(b + 1);
 		}
 	}
 
@@ -75,12 +83,13 @@ function verb(v, p, n, g, a, ref, s) {
 	if(s == undefined)
 		s = 0;
 
-	if(s == 0 && ref == 0) vows = ["","a","a","hi","|","o"]
-	if(s == 0 && ref == 1) vows = ["ni","|","a","hin|","A","E"]
-	if(s == 1 && ref == 0) vows = ["","i","E","hi","a","E"]
-	if(s == 1 && ref == 1) vows = ["","u","a","hu","u","a"]
-	if(s == 2 && ref == 0) vows = ["hi","|","I","ha","|","I"]
-	if(s == 2 && ref == 1) vows = ["ha","|","a","hA","|","a"]
+	if(s == 0 && ref == 0) vows = ["","a","a","i","|","o"]
+	if(s == 0 && ref == 1) vows = ["ni","|","a","in|","A","E"]
+	if(s == 1 && ref == 0) vows = ["","i","E","i","a","E"]
+	if(s == 1 && ref == 1) vows = ["","u","a","|","u","a"]
+	if(s == 2 && ref == 0) vows = ["hi","|","I","a","|","I"]
+	if(s == 2 && ref == 1) vows = ["ha","|","a","A","|","a"]
+	if(s == 3) vows = ["hit","a","E","i","a","E"]
 
 	if(s == 1)
 		r[1] = r[1].toUpperCase();
@@ -95,9 +104,9 @@ function verb(v, p, n, g, a, ref, s) {
 	]
 
 	var iforms = [ 
-	[ [ "'|"+ktob,"'|"+ktob ] ,     ["n|"+ktob,"n|"+ktob ] ] ,
-	[ [ "t|"+ktob,"t|"+ktob+"i" ] , ["t|"+ktob+"u","t|"+ktob+"|na" ] ] ,
-	[ [ "y|"+ktob,"t|"+ktob ] ,    ["y|"+ktob+"u","t|"+ktob+"|nah" ] ] ,
+	[ [ "'"+ktob,"'"+ktob ] ,     ["n"+ktob,"n"+ktob ] ] ,
+	[ [ "t"+ktob,"t"+ktob+"i" ] , ["t"+ktob+"u","t"+ktob+"|nAh" ] ] ,
+	[ [ "y"+ktob,"t"+ktob ] ,     ["y"+ktob+"u","t"+ktob+"|nAh" ] ] ,
 	]
 
 	if(a == 0)
@@ -106,8 +115,12 @@ function verb(v, p, n, g, a, ref, s) {
 	if(a == 1)
 		form = iforms[p][n][g];
 
-	if(form != katab)
-		form = reduce2ndvowel(form);
+	if(form != katab) {
+		if(s == 2 && ref == 0 && a == 1)
+			form = reduce2ndvowel(form, "E");
+		else
+			form = reduce2ndvowel(form);
+	}
 
 	form = assimilatens(form);
 
