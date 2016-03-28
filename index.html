@@ -29,11 +29,25 @@ function reduce2ndvowel(a) {
 		}
 	}
 
+	c = 0;
+
 	for(var b = a.length - 1; b >= 0; b--) {
 		if(isvowel(a[b])) {
 			c++;
 			if(c == 3 && a[b] == "I")
 				a = a.substr(0, b) + "a" + a.substr(b + 1);
+		}
+	}
+
+	return a;
+}
+
+function assimilatens(a) {
+	var c = 0;
+
+	for(var b = 0; b < a.length - 3; b++) {
+		if(a[b] == "n" && a[b+1] == "|" && "tdkgpbqTDKGPBQ".indexOf(a[b+2]) != -1) {
+			a = a.substr(0, b) + a[b+2].toUpperCase() + a.substr(b + 3);
 		}
 	}
 
@@ -56,20 +70,23 @@ function verb(v, p, n, g, a, ref, s) {
 	var bpform = r[0]+"A"+r[2];
 	var biform = r[0]+r[1].toUpperCase()+r[2];
 
-	var vows = ["a", "a", "i", "hi", "a"];
+	var vows = ["a", "a", "i", "hi", "|", "a"];
 
 	if(s == undefined)
 		s = 0;
 
-	if(s == 0 && ref == 0) vows = ["","a","a","hi","o"]
-	if(s == 0 && ref == 1) vows = ["ni","a","a","hin","a"]
-	if(s == 1 && ref == 0) vows = ["","i","E","hi","a"]
-	if(s == 1 && ref == 1) vows = ["","u","a","hu","a"]
-	if(s == 2 && ref == 0) vows = ["hi","|","I","ha","a"]
-	if(s == 2 && ref == 1) vows = ["ha","|","a","ha","a"]
+	if(s == 0 && ref == 0) vows = ["","a","a","hi","|","o"]
+	if(s == 0 && ref == 1) vows = ["ni","|","a","hin|","A","E"]
+	if(s == 1 && ref == 0) vows = ["","i","E","hi","a","E"]
+	if(s == 1 && ref == 1) vows = ["","u","a","hu","u","a"]
+	if(s == 2 && ref == 0) vows = ["hi","|","I","ha","|","I"]
+	if(s == 2 && ref == 1) vows = ["ha","|","a","hA","|","a"]
+
+	if(s == 1)
+		r[1] = r[1].toUpperCase();
 
 	katab = vows[0]+r[0]+vows[1]+r[1]+vows[2]+r[2];
-	ktob = vows[3]+r[0]+"|"+r[1]+vows[4]+r[2];
+	ktob = vows[3]+r[0]+vows[4]+r[1]+vows[5]+r[2];
 
 	var pforms = [ 
 	[ [ katab+"|ti",katab+"|ti" ] ,  [katab+"|nu",katab+"|nu" ] ] ,
@@ -89,7 +106,10 @@ function verb(v, p, n, g, a, ref, s) {
 	if(a == 1)
 		form = iforms[p][n][g];
 
-	form = reduce2ndvowel(form);
+	if(form != katab)
+		form = reduce2ndvowel(form);
+
+	form = assimilatens(form);
 
 	return form;
 
