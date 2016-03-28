@@ -1,0 +1,206 @@
+<html>
+<head>
+</head>
+<body>
+
+<input type="text" id="input" />
+
+<div id="output">
+
+</div>
+
+<script>
+
+function isvowel(a) {
+	if("aeiouAEIOU|".indexOf(a)!=-1)
+		return true;
+
+	return false;
+}
+
+function reduce2ndvowel(a) {
+	var c = 0;
+
+	for(var b = a.length - 1; b >= 0; b--) {
+		if(isvowel(a[b])) {
+			c++;
+			if(c == 2 && a[b] != "I")
+				a = a.substr(0, b) + "|" + a.substr(b + 1);
+		}
+	}
+
+	for(var b = a.length - 1; b >= 0; b--) {
+		if(isvowel(a[b])) {
+			c++;
+			if(c == 3 && a[b] == "I")
+				a = a.substr(0, b) + "a" + a.substr(b + 1);
+		}
+	}
+
+	return a;
+}
+
+function verbkind(a) {
+
+}
+
+function verb(v, p, n, g, a, ref, s) {
+	var r = v.split("");
+
+	var katab = r[0]+"a"+r[1]+"a"+r[2];
+	var ktab = r[0]+r[1]+"a"+r[2];
+	var katb = r[0]+"a"+r[1]+r[2];
+	var ktob = r[0]+"|"+r[1]+"o"+r[2];
+	var ktb = r[0]+r[1]+r[2];
+
+	var bpform = r[0]+"A"+r[2];
+	var biform = r[0]+r[1].toUpperCase()+r[2];
+
+	var vows = ["a", "a", "i", "hi", "a"];
+
+	if(s == undefined)
+		s = 0;
+
+	if(s == 0 && ref == 0) vows = ["","a","a","hi","o"]
+	if(s == 0 && ref == 1) vows = ["ni","a","a","hin","a"]
+	if(s == 1 && ref == 0) vows = ["","i","E","hi","a"]
+	if(s == 1 && ref == 1) vows = ["","u","a","hu","a"]
+	if(s == 2 && ref == 0) vows = ["hi","|","I","ha","a"]
+	if(s == 2 && ref == 1) vows = ["ha","|","a","ha","a"]
+
+	katab = vows[0]+r[0]+vows[1]+r[1]+vows[2]+r[2];
+	ktob = vows[3]+r[0]+"|"+r[1]+vows[4]+r[2];
+
+	var pforms = [ 
+	[ [ katab+"|ti",katab+"|ti" ] ,  [katab+"|nu",katab+"|nu" ] ] ,
+	[ [ katab+"|ta",katab+"|t|" ] ,   [katab+"|tem",katab+"|ten" ] ] ,
+	[ [ katab+"",katab+"a" ] ,     [katab+"u",katab+"u" ] ] ,
+	]
+
+	var iforms = [ 
+	[ [ "'|"+ktob,"'|"+ktob ] ,     ["n|"+ktob,"n|"+ktob ] ] ,
+	[ [ "t|"+ktob,"t|"+ktob+"i" ] , ["t|"+ktob+"u","t|"+ktob+"|na" ] ] ,
+	[ [ "y|"+ktob,"t|"+ktob ] ,    ["y|"+ktob+"u","t|"+ktob+"|nah" ] ] ,
+	]
+
+	if(a == 0)
+		form = pforms[p][n][g];
+
+	if(a == 1)
+		form = iforms[p][n][g];
+
+	form = reduce2ndvowel(form);
+
+	return form;
+
+	if(ref == 1) {
+		var katab = r[0]+r[1]+"a"+r[2];
+		var katb = r[0]+r[1]+r[2];
+		var ktob = r[0].toUpperCase()+"A"+r[1]+"E"+r[2];
+		var ktb = r[0].toUpperCase()+"A"+r[1]+r[2];
+		var biform = r[0].toUpperCase()+r[1].toUpperCase()+r[2];
+	}
+
+	var pforms = [ 
+	[ [ katab+"ti",katab+"ti" ] ,  [katab+"nu",katab+"nu" ] ] ,
+	[ [ katab+"ta",katab+"t" ] ,   [ktab+"tem",ktab+"ten" ] ] ,
+	[ [ katab,katb+"a" ] ,         [katb+"u",katb+"u" ] ] ,
+	]
+
+	var iforms = [ 
+	[ [ "'e"+ktob,"e"+ktob ] ,     ["ni"+ktob,"ni"+ktob ] ] ,
+	[ [ "ti"+ktob,"ti"+ktb+"i" ] , ["ti"+ktb+"u","ti"+ktob+"na" ] ] ,
+	[ [ "yi"+ktob,"ti"+ktob ] ,    ["yi"+ktb+"u","ti"+ktob+"nah" ] ] ,
+	]
+
+	var bpforms = [ 
+	[ [ bpform+"ti",bpform+"ti" ] ,  [bpform+"nu",bpform+"nu" ] ] ,
+	[ [ bpform+"ta",bpform+"t" ] ,   [bpform+"tem",bpform+"ten" ] ] ,
+	[ [ bpform,bpform+"a" ] ,         [bpform+"u",bpform+"u" ] ] ,
+	]
+
+	var biforms = [ 
+	[ [ "'A"+biform,"'A"+biform ] ,     ["nA"+biform,"nA"+biform ] ] ,
+	[ [ "tA"+biform,"tA"+biform+"I" ] , ["tA"+biform+"U","t"+biform+"einAh" ] ] ,
+	[ [ "yA"+biform,"tA"+biform ] ,    ["yA"+biform+"U","t"+biform+"einAh" ] ] ,
+	]
+
+	if(ref == undefined || ref == 0) {
+		if(a == undefined || a == 0) {
+			if(isvowel(r[1]))
+				return bpforms[p][n][g];
+
+			return pforms[p][n][g];
+		} else {
+			if(isvowel(r[1]))
+				return biforms[p][n][g];
+
+			return iforms[p][n][g];
+		}
+	} else {
+		if(a == undefined || a == 0) {
+			if(isvowel(r[1]))
+				return "ni"+bpforms[p][n][g];
+
+			return "ni"+pforms[p][n][g];
+		} else {
+			if(isvowel(r[1]))
+				return biforms[p][n][g];
+
+			return iforms[p][n][g];
+		}
+	}
+}
+
+function createtable(title, a, ref, s) {
+	var output="";
+	output+="<div class=\'stemgroup\' style=\'float:left;margin-right:20px\'>";
+	output+="<h1>"+title+"</h1>";
+	output+="<table>";
+	output+="<tr><td>Person</td><td>Singular</td><td>Plural</td></tr>";
+	output+="<tr><td>1st</td><td>"+verb(a,0,0,0,0,ref,s)+"</td><td>"+verb(a,0,1,0,0,ref,s)+"</td></tr>";
+	output+="<tr><td>2nd</td><td>"+verb(a,1,0,0,0,ref,s)+"</td><td>"+verb(a,1,1,0,0,ref,s)+"</td></tr>";
+	output+="<tr><td>2nd</td><td>"+verb(a,1,0,1,0,ref,s)+"</td><td>"+verb(a,1,1,1,0,ref,s)+"</td></tr>";
+	output+="<tr><td>3rd</td><td>"+verb(a,2,0,0,0,ref,s)+"</td><td>"+verb(a,2,1,0,0,ref,s)+"</td></tr>";
+	output+="<tr><td>3rd</td><td>"+verb(a,2,0,1,0,ref,s)+"</td><td>"+verb(a,2,1,1,0,ref,s)+"</td></tr>";
+	output+="</table>";
+	output+="<table>";
+	output+="<tr><td>Person</td><td>Singular</td><td>Plural</td></tr>";
+	output+="<tr><td>1st</td><td>"+verb(a,0,0,0,1,ref,s)+"</td><td>"+verb(a,0,1,0,1,ref,s)+"</td></tr>";
+	output+="<tr><td>2nd</td><td>"+verb(a,1,0,0,1,ref,s)+"</td><td>"+verb(a,1,1,0,1,ref,s)+"</td></tr>";
+	output+="<tr><td>2nd</td><td>"+verb(a,1,0,1,1,ref,s)+"</td><td>"+verb(a,1,1,1,1,ref,s)+"</td></tr>";
+	output+="<tr><td>3rd</td><td>"+verb(a,2,0,0,1,ref,s)+"</td><td>"+verb(a,2,1,0,1,ref,s)+"</td></tr>";
+	output+="<tr><td>3rd</td><td>"+verb(a,2,0,1,1,ref,s)+"</td><td>"+verb(a,2,1,1,1,ref,s)+"</td></tr>";
+	output+="</table>";
+	output+="</div>"
+	return output;
+}
+
+document.getElementById("input").onkeyup = function(e) {
+	var input = document.getElementById("input").value;
+	var output="";
+
+	var a;
+
+	a=input;
+
+	if(a.length<2)
+		return;
+
+	document.getElementById("output").innerHTML="";
+
+	output+=createtable("Pagal", a, 0, 0);
+	output+=createtable("Pigel", a, 0, 1);
+	output+=createtable("Hipgil", a, 0, 2);
+	output+=createtable("Hitpagel", a, 0, 3);
+	output+=createtable("Hupgal", a, 1, 2);
+	output+=createtable("Pugal", a, 1, 1);
+	output+=createtable("Nipgal", a, 1, 0);
+
+	document.getElementById("output").innerHTML=output;
+}
+
+</script>
+
+</html>
+
