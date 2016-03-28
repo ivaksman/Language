@@ -54,7 +54,7 @@ function assimilatens(a) {
 	var c = 0;
 
 	for(var b = 0; b < a.length - 3; b++) {
-		if(a[b] == "n" && a[b+1] == "|" && "tdkgpbqlTDKGPBQL".indexOf(a[b+2]) != -1) {
+		if(a[b] == "n" && a[b+1] == "|" && "tdkgpbqnlTDKGPBQNL".indexOf(a[b+2]) != -1) {
 			a = a.substr(0, b) + a[b+2].toUpperCase() + a.substr(b + 3);
 		}
 	}
