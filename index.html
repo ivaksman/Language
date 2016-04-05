@@ -24,7 +24,7 @@ function reduce2ndvowel(a, i, e) {
 	for(var b = a.length - 1; b >= 0; b--) {
 		if(isvowel(a[b])) {
 			c++;
-			if(c == 2 && a[b] != "I" && a[b] != "u")
+			if(c == 2 && a[b] != "I" && a[b] != "A" && a[b] != "u")
 				a = a.substr(0, b) + "|" + a.substr(b + 1);
 		}
 	}
@@ -50,17 +50,7 @@ function reduce2ndvowel(a, i, e) {
 	return a;
 }
 
-function assimilatens(a) {
-	var c = 0;
 
-	for(var b = 0; b < a.length - 3; b++) {
-		if(a[b] == "n" && a[b+1] == "|" && "tdkgpbqnlTDKGPBQNL".indexOf(a[b+2]) != -1) {
-			a = a.substr(0, b) + a[b+2].toUpperCase() + a.substr(b + 3);
-		}
-	}
-
-	return a;
-}
 
 function verbkind(a) {
 
@@ -69,40 +59,70 @@ function verbkind(a) {
 function verb(v, p, n, g, a, ref, s) {
 	var r = v.split("");
 
-	var katab = r[0]+"a"+r[1]+"a"+r[2];
-	var ktob = r[0]+"|"+r[1]+"o"+r[2];
+	if("uio".indexOf(r[1])==-1) {
+		var vows = [ 
+		[ ["","A","a","i","|","o"], ["ni","|","a","in|","A","E"] ],
+		[ ["","i","E","|","a","E"], ["","u","a","|","u","a"] ],
+		[ ["hi","|","I","a","|","I"], ["ha","|","a","A","|","a"] ],
+		[ ["hit","a","E","i","a","E"], ["hit","a","E","i","a","E"] ]
+		];
 
-	var vows = ["a", "a", "i", "hi", "|", "a"];
+		if(s == undefined)
+			s = 0;
 
-	if(s == undefined)
-		s = 0;
+		vows = vows[s][ref];
 
-	vows = [ 
-	[ ["","a","a","i","|","o"], ["ni","|","a","in|","A","E"] ],
-	[ ["","i","E","|","a","E"], ["","u","a","|","u","a"] ],
-	[ ["hi","|","I","a","|","I"], ["ha","|","a","A","|","a"] ],
-	[ ["hit","a","E","i","a","E"], ["hit","a","E","i","a","E"] ]
-	];
+		if(s == 1)
+			r[1] = r[1]+"|"+r[1];
 
-	vows = vows[s][ref];
+		katab = vows[0]+r[0]+vows[1]+r[1]+vows[2]+r[2];
+		ktab = vows[0]+r[0]+"|"+r[1]+vows[2]+r[2];
+		ktob = vows[3]+r[0]+vows[4]+r[1]+vows[5]+r[2];
 
-	if(s == 1)
-		r[1] = r[1].toUpperCase();
+		var pforms = [ 
+		[ [ katab+"|tI",katab+"|tI" ] ,  [katab+"|nu",katab+"|nu" ] ] ,
+		[ [ katab+"|tA",katab+"|t|" ] ,   [ktab+"|tem",ktab+"|ten" ] ] ,
+		[ [ katab+"",katab+"a" ] ,     [katab+"u",katab+"u" ] ] ,
+		]
 
-	katab = vows[0]+r[0]+vows[1]+r[1]+vows[2]+r[2];
-	ktob = vows[3]+r[0]+vows[4]+r[1]+vows[5]+r[2];
+		var iforms = [ 
+		[ [ "'"+ktob,"'"+ktob ] ,     ["n"+ktob,"n"+ktob ] ] ,
+		[ [ "t"+ktob,"t"+ktob+"i" ] , ["t"+ktob+"u","t"+ktob+"|nAh" ] ] ,
+		[ [ "y"+ktob,"t"+ktob ] ,     ["y"+ktob+"u","t"+ktob+"|nAh" ] ] ,
+		]
+	} else {
+		var vows = [ 
+		[ ["","A","a","A","|","o"], ["ni","|","a","in|","A","E"] ],
+		[ ["","I","E","|","a","E"], ["","u","a","|","u","a"] ],
+		[ ["hE","I","I","a","|","I"], ["hu","|","a","A","|","a"] ],
+		[ ["hit","a","E","i","a","E"], ["hit","a","E","i","a","E"] ]
+		];
 
-	var pforms = [ 
-	[ [ katab+"|tI",katab+"|tI" ] ,  [katab+"|nu",katab+"|nu" ] ] ,
-	[ [ katab+"|tA",katab+"|t|" ] ,   [katab+"|tem",katab+"|ten" ] ] ,
-	[ [ katab+"",katab+"a" ] ,     [katab+"u",katab+"u" ] ] ,
-	]
+		if(s == undefined)
+			s = 0;
 
-	var iforms = [ 
-	[ [ "'"+ktob,"'"+ktob ] ,     ["n"+ktob,"n"+ktob ] ] ,
-	[ [ "t"+ktob,"t"+ktob+"i" ] , ["t"+ktob+"u","t"+ktob+"|nAh" ] ] ,
-	[ [ "y"+ktob,"t"+ktob ] ,     ["y"+ktob+"u","t"+ktob+"|nAh" ] ] ,
-	]
+		vows = vows[s][ref];
+
+		if(s == 1)
+			r[1] = r[1]+"|"+r[1];
+
+		katab = vows[0]+r[0]+vows[1]+r[2];
+		ktab = vows[0]+r[0]+"|"+r[1]+vows[2]+r[2];
+		ktob = vows[3]+r[0]+r[1]+r[2];
+		ktob2 = "|"+r[0]+r[1]+r[2];
+
+		var pforms = [ 
+		[ [ katab+"|tI",katab+"|tI" ] ,  [katab+"|nu",katab+"|nu" ] ] ,
+		[ [ katab+"|tA",katab+"|t|" ] ,   [katab+"|tem",katab+"|ten" ] ] ,
+		[ [ katab+"",katab+"a" ] ,     [katab+"u",katab+"u" ] ] ,
+		]
+
+		var iforms = [ 
+		[ [ "'"+ktob,"'"+ktob ] ,     ["n"+ktob,"n"+ktob ] ] ,
+		[ [ "t"+ktob,"t"+ktob+"i" ] , ["t"+ktob+"u","t"+ktob2+"|nAh" ] ] ,
+		[ [ "y"+ktob,"t"+ktob ] ,     ["y"+ktob+"u","t"+ktob2+"|nAh" ] ] ,
+		]
+	}
 
 	if(a == 0)
 		form = pforms[p][n][g];
@@ -111,36 +131,32 @@ function verb(v, p, n, g, a, ref, s) {
 		form = iforms[p][n][g];
 
 	if(form != katab) {
-		if(s == 2 && ref == 0 && a == 1)
-			form = reduce2ndvowel(form, "E");
-		else
+		if(s != 2)
 			form = reduce2ndvowel(form);
 	}
 
-	form = assimilatens(form);
-
-	form = form.replace(/^[a-z]\|[a-z]\|/g, function(a) {
-		return a.charAt(0)+"i"+a.charAt(2)+"|";
+	form = form.replace(/^n\|[bcdfghjklmnpqrstvwxyz]/g, function(a) {
+		return "n|"+a.charAt(2);
 	});
-	
-	form = form.replace(/^[a-z]\|/g, function(a) {
+
+	form = form.replace(/n\|[bcdfghjklmnpqrstvwxyz]/g, function(a) {
+		return a.charAt(2)+"|"+a.charAt(2);
+	});
+
+	form = form.replace(/'i/g, function(a) {
+		return "'e";
+	});
+
+	form = form.replace(/^[bcdfghjklmnpqrstvwxyz]\|/g, function(a) {
 		return a.charAt(0)+"&#601;";
 	});
 
-	form = form.replace(/\|[a-z]\|/g, function(a) {
-		return a.charAt(1)+"&#601;";
+	form = form.replace(/[bcdfghjklmnpqrstvwxyz]\|[bcdfghjklmnpqrstvwxyz]\|/g, function(a) {
+		return a.charAt(0)+a.charAt(2)+"&#601;";
 	});
 
-	form = form.replace(/[BCDFGHJKLMNPQRSTVWXYZ]\|/g, function(a) {
-		return a.charAt(0)+"&#601;";
-	});
-
-	form = form.replace(/[AEIOU][BCDFGHJKLMNPQRSTVWXYZbcdfghjklmnpqrstvwxyz]\|/g, function(a) {
+	form = form.replace(/[AEIOU][bcdfghjklmnpqrstvwxyz]\|/g, function(a) {
 		return a.charAt(0)+a.charAt(1)+"&#601;";
-	});
-
-	form = form.replace(/[BCDFGHJKLMNPQRSTVWXYZ]/g, function(a) {
-		return a.toLowerCase()+a.toLowerCase();
 	});
 
 	form = form.replace(/[AEIOU]/g, function(a) {
