@@ -19,17 +19,10 @@ function isvowel(a) {
 }
 
 function reduce2ndvowel(a, i, e) {
-	var c = 0;
 
-	for(var b = a.length - 1; b >= 0; b--) {
-		if(isvowel(a[b])) {
-			c++;
-			if(c == 2 && a[b] != "I" && a[b] != "A" && a[b] != "u")
-				a = a.substr(0, b) + "|" + a.substr(b + 1);
-		}
-	}
-
-	c = 0;
+	a = a.replace(/[aeio][bcdfghjklmnpqrstvwxyz][aeiou][bcdfghjklmnpqrstvwxyz]?$/g, function(a) {
+		return "|"+a.substr(1);
+	});
 
 	if(i == undefined)
 		i = "a";
@@ -37,15 +30,14 @@ function reduce2ndvowel(a, i, e) {
 	if(e == undefined)
 		e = "a";
 
-	for(var b = a.length - 1; b >= 0; b--) {
-		if(isvowel(a[b])) {
-			c++;
-			if(c == 3 && a[b] == "I")
-				a = a.substr(0, b) + i + a.substr(b + 1);
-			else if(c == 3 && a[b] == "E")
-				a = a.substr(0, b) + e + a.substr(b + 1);
-		}
-	}
+	a = a.replace(/[IE][bcdfghjklmnpqrstvwxyz][aeiouAEIOU\|][bcdfghjklmnpqrstvwxyz][aeiouAEIOU\|][bcdfghjklmnpqrstvwxyz]?$/g, function(a) {
+		var reps = { I: i, E: e };
+
+		if(reps[a[0]]!=undefined)
+			return reps[a[0]]+a.substr(1);
+		else
+			return a;
+	});
 
 	return a;
 }
@@ -59,6 +51,12 @@ function verbkind(a) {
 function verb(v, p, n, g, a, ref, s) {
 	var r = v.split("");
 
+	if(s == undefined)
+		s = 0;
+
+	if(s == 1)
+			r[1] = r[1]+"|"+r[1];
+
 	if("uio".indexOf(r[1])==-1) {
 		var vows = [ 
 		[ ["","A","a","i","|","o"], ["ni","|","a","in|","A","E"] ],
@@ -67,72 +65,83 @@ function verb(v, p, n, g, a, ref, s) {
 		[ ["hit","a","E","i","a","E"], ["hit","a","E","i","a","E"] ]
 		];
 
-		if(s == undefined)
-			s = 0;
-
 		vows = vows[s][ref];
-
-		if(s == 1)
-			r[1] = r[1]+"|"+r[1];
 
 		katab = vows[0]+r[0]+vows[1]+r[1]+vows[2]+r[2];
 		ktab = vows[0]+r[0]+"|"+r[1]+vows[2]+r[2];
 		ktob = vows[3]+r[0]+vows[4]+r[1]+vows[5]+r[2];
 
-		var pforms = [ 
+		var forms = [
+		[ 
 		[ [ katab+"|tI",katab+"|tI" ] ,  [katab+"|nu",katab+"|nu" ] ] ,
 		[ [ katab+"|tA",katab+"|t|" ] ,   [ktab+"|tem",ktab+"|ten" ] ] ,
 		[ [ katab+"",katab+"a" ] ,     [katab+"u",katab+"u" ] ] ,
 		]
-
-		var iforms = [ 
+		,
+		[ 
 		[ [ "'"+ktob,"'"+ktob ] ,     ["n"+ktob,"n"+ktob ] ] ,
-		[ [ "t"+ktob,"t"+ktob+"i" ] , ["t"+ktob+"u","t"+ktob+"|nAh" ] ] ,
+		[ [ "t"+ktob,"t"+ktob+"I" ] , ["t"+ktob+"u","t"+ktob+"|nAh" ] ] ,
 		[ [ "y"+ktob,"t"+ktob ] ,     ["y"+ktob+"u","t"+ktob+"|nAh" ] ] ,
 		]
+		]
+
+		form = forms[a][p][n][g];
+
+		if(form != katab) {
+			if(s == 2 && ref == 0 && a == 1)
+				form = reduce2ndvowel(form, "E");
+			else
+				form = reduce2ndvowel(form);
+		}
 	} else {
 		var vows = [ 
-		[ ["","A","a","A","|","o"], ["ni","|","a","in|","A","E"] ],
-		[ ["","I","E","|","a","E"], ["","u","a","|","u","a"] ],
-		[ ["hE","I","I","a","|","I"], ["hu","|","a","A","|","a"] ],
-		[ ["hit","a","E","i","a","E"], ["hit","a","E","i","a","E"] ]
+		[ ["",   "A","A",r[1]], ["ni", "A","in|",r[1]] ],
+		[ ["",   "I","|","E"],  ["",   "u","",   "a"] ],
+		[ ["hE", "I","A","I"],  ["hu", "a","u",  "a"] ],
+		[ ["hit","a","i","E"],  ["hit","a","i",  "E"] ]
 		];
-
-		if(s == undefined)
-			s = 0;
 
 		vows = vows[s][ref];
 
-		if(s == 1)
-			r[1] = r[1]+"|"+r[1];
-
 		katab = vows[0]+r[0]+vows[1]+r[2];
-		ktab = vows[0]+r[0]+"|"+r[1]+vows[2]+r[2];
-		ktob = vows[3]+r[0]+r[1]+r[2];
-		ktob2 = "|"+r[0]+r[1]+r[2];
+		ktob = vows[2]+r[0]+vows[3]+r[2];
 
-		var pforms = [ 
+		if(s == 0)
+			ktob2 = "|"+r[0]+vows[3]+r[2];
+		else
+			ktob2 = ktob;
+
+		if(s == 2 && ref == 0) {
+			if(p == 0 || p == 1)
+				katab = "h|"+r[0]+"I"+r[2]+"O";
+			else
+				katab = "hE"+r[0]+"I"+r[2];
+
+			ktob2 = "|"+r[0]+vows[3]+r[2]+"ei";
+		}
+
+		var forms = [
+		[ 
 		[ [ katab+"|tI",katab+"|tI" ] ,  [katab+"|nu",katab+"|nu" ] ] ,
 		[ [ katab+"|tA",katab+"|t|" ] ,   [katab+"|tem",katab+"|ten" ] ] ,
 		[ [ katab+"",katab+"a" ] ,     [katab+"u",katab+"u" ] ] ,
 		]
-
-		var iforms = [ 
+		,
+		[ 
 		[ [ "'"+ktob,"'"+ktob ] ,     ["n"+ktob,"n"+ktob ] ] ,
-		[ [ "t"+ktob,"t"+ktob+"i" ] , ["t"+ktob+"u","t"+ktob2+"|nAh" ] ] ,
+		[ [ "t"+ktob,"t"+ktob+"I" ] , ["t"+ktob+"u","t"+ktob2+"|nAh" ] ] ,
 		[ [ "y"+ktob,"t"+ktob ] ,     ["y"+ktob+"u","t"+ktob2+"|nAh" ] ] ,
 		]
-	}
+		]
 
-	if(a == 0)
-		form = pforms[p][n][g];
+		form = forms[a][p][n][g];
 
-	if(a == 1)
-		form = iforms[p][n][g];
-
-	if(form != katab) {
-		if(s != 2)
-			form = reduce2ndvowel(form);
+		if(form != katab) {
+			if(s == 2 && ref == 0)
+				form = reduce2ndvowel(form, "E", "E");
+			else
+				form = reduce2ndvowel(form);
+		}
 	}
 
 	form = form.replace(/^n\|[bcdfghjklmnpqrstvwxyz]/g, function(a) {
