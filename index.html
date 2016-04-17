@@ -55,7 +55,7 @@ function verb(v, p, n, g, a, ref, s) {
 		verbsv['dbr']=["a", "E"];
 		verbsv['hgd']=["a", "I"];
 
-		var v3 = "i", v5 = "A";
+		var v3 = "i", v5 = "a";
 
 		if(verbsv[v] != undefined) {
 			v3 = verbsv[v][0];
@@ -162,33 +162,32 @@ function verb(v, p, n, g, a, ref, s) {
 		return a.charAt(0).toUpperCase()+a.charAt(1);
 	});
 
-	form = form.replace(/^[`'bcdfghjklmnpqrstvwxyz]\|/g, function(a) {
+	form = form.replace(/^[`'bcdfghjklmnpqrstvwxyzHST]\|/g, function(a) {
 		return a.charAt(0)+"+";
 	});
 
-	form = form.replace(/[`'bcdfghjklmnpqrstvwxyz]\|[`'bcdfghjklmnpqrstvwxyz]\|/g, function(a) {
+	form = form.replace(/[`'bcdfghjklmnpqrstvwxyzHST]\|[`'bcdfghjklmnpqrstvwxyzHST]\|/g, function(a) {
 		return a.charAt(0)+a.charAt(2)+"+";
 	});
 
-	form = form.replace(/[AEIOU][`bcdfghjklmnpqrstvwxyz]\|/g, function(a) {
+	form = form.replace(/[AEIOU][`bcdfghjklmnpqrstvwxyzHST]\|/g, function(a) {
 		return a.charAt(0)+a.charAt(1)+"+";
 	});
 
-	form = form.replace(/[`'h]\+[`'bcdfghjklmnpqrstvwxyz][auAU]/g, function(a) {
+	form = form.replace(/[`'h]\+[`'bcdfghjklmnpqrstvwxyzHST][auAU]/g, function(a) {
 		return a.charAt(0)+"&#x00e5;"+a.substr(2);
 	});
 
-	form = form.replace(/\+/g, function(a) {
-		return "&#601;";
-	});
+	form = form.split("");
 
-	form = form.replace(/[AEIOU]/g, function(a) {
-		return a.toLowerCase()+"&#772;";
-	});
+	for(x in form) {
+		if("AEIOU".indexOf(form[x])!=-1) form[x]=form[x].toLowerCase()+"&#772;";
+		if("HST".indexOf(form[x])!=-1) form[x]=form[x].toLowerCase()+"&#803;";
+		if(form[x]=="+") form[x]="&#601;";
+		if(form[x]=="|") form[x]="";
+	}
 
-	form = form.replace(/\|/g, function(a) {
-		return "";
-	});
+	form = form.join("");
 
 	return form;
 
