@@ -35,7 +35,7 @@ function reduce2ndvowel(a, repsc) {
 	return a;
 }
 
-
+var P=3,N=2,G=2,A=2,R=2,S=6;
 
 
 
@@ -51,9 +51,9 @@ function verb(v, p, n, g, a, ref, s) {
 	if("uio".indexOf(r[1])==-1) {
 		var verbsv = {};
 
-		verbsv['\'mr']="O|e";
+		verbsv['\'mr']="O|a";
 		verbsv['bhr']="i|a";
-		verbsv['dbr']="a|E";
+		verbsv['dbr']="|aE";
 		verbsv['hgd']="a|I";
 		verbsv['ktb']="i|a";
 
@@ -183,14 +183,41 @@ function verb(v, p, n, g, a, ref, s) {
 
 	form = form.split("");
 
+	var prev="";
+
 	for(x in form) {
+		/*
+		var prevsave=form[x];
+		var bgdkpt={b:"v",g:"g",d:"d",k:"k",p:"f",t:"t"};
+		if("AEIOUaeiou+".indexOf(prev)!=-1&&bgdkpt[form[x]]!=undefined) {
+			form[x]=bgdkpt[form[x]];
+		}
+		prev=prevsave;
+		*/
+
 		if("AEIOU".indexOf(form[x])!=-1) form[x]=form[x].toLowerCase()+"&#772;";
 		if("HST".indexOf(form[x])!=-1) form[x]=form[x].toLowerCase()+"&#803;";
 		if(form[x]=="c") form[x]="&scaron;";
 		if(form[x]=="+") form[x]="&#601;";
 		if(form[x]=="|") form[x]="";
 	}
+/*
+	for(x in form) {
+		var prevsave=form[x];
+		var bgdkpt={b:"v",g:"g",d:"d",k:"k",p:"f",t:"t"};
+		if("AEIOUaeiou+".indexOf(prev)!=-1&&bgdkpt[form[x]]!=undefined) {
+			form[x]=bgdkpt[form[x]];
+		}
+		prev=prevsave;
 
+		if("'`".indexOf(form[x])!=-1) form[x]="";
+		if("AIOU".indexOf(form[x])!=-1) form[x]=form[x].toLowerCase();
+		if("E".indexOf(form[x])!=-1) form[x]="ey";
+		if(form[x]=="c") form[x]="&scaron;";
+		if(form[x]=="+") form[x]="&#601;";
+		if(form[x]=="|") form[x]="";
+	}
+*/
 	form = form.join("");
 
 	return form;
