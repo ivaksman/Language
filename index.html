@@ -51,19 +51,22 @@ function verb(v, p, n, g, a, ref, s) {
 	if("uio".indexOf(r[1])==-1) {
 		var verbsv = {};
 
-		verbsv['bhr']=["e", "a"];
-		verbsv['dbr']=["a", "E"];
-		verbsv['hgd']=["a", "I"];
+		verbsv['\'mr']="O|e";
+		verbsv['bhr']="i|a";
+		verbsv['dbr']="a|E";
+		verbsv['hgd']="a|I";
+		verbsv['ktb']="i|a";
 
-		var v3 = "i", v5 = "a";
+		var v3 = "i", v4 = "|", v5 = "a";
 
 		if(verbsv[v] != undefined) {
-			v3 = verbsv[v][0];
-			v5 = verbsv[v][1];
+			v3 = verbsv[v].charAt(0);
+			v4 = verbsv[v].charAt(1);
+			v5 = verbsv[v].charAt(2);
 		}
 
 		var vows = [ 
-		[ ["","A","a",v3,"|",v5], ["ni","|","a","in|","A","E"] ],
+		[ ["","A","a",v3,v4,v5], ["ni","|","a","in|","A","E"] ],
 		[ ["","i","E","|","a","E"], ["","u","a","|","u","a"] ],
 		[ ["hi","|","I","a","|","I"], ["ha","|","a","A","|","a"] ],
 		[ ["hit","a","E","i","a","E"], ["hit","a","E","i","a","E"] ]
@@ -183,6 +186,7 @@ function verb(v, p, n, g, a, ref, s) {
 	for(x in form) {
 		if("AEIOU".indexOf(form[x])!=-1) form[x]=form[x].toLowerCase()+"&#772;";
 		if("HST".indexOf(form[x])!=-1) form[x]=form[x].toLowerCase()+"&#803;";
+		if(form[x]=="c") form[x]="&scaron;";
 		if(form[x]=="+") form[x]="&#601;";
 		if(form[x]=="|") form[x]="";
 	}
