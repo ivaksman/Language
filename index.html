@@ -3,6 +3,32 @@
 </head>
 <body>
 
+<select id="inputsubj">
+<option value="0,0,0">i</option>
+<option value="1,0,0">you (masc)</option>
+<option value="1,0,1">you (fem)</option>
+<option value="1,1,0">you all (masc)</option>
+<option value="1,1,1">you all (fem)</option>
+<option value="2,0,0">he</option>
+<option value="2,0,1">she</option>
+<option value="2,1,0">them (masc)</option>
+<option value="2,1,1">them (fem)</option>
+</select>
+
+<select id="inputaspect">
+<option value="0">have</option>
+<option value="1">will</option>
+</select>
+
+<select id="inputverb">
+</select>
+
+<div id="output1">
+
+</div>
+
+<br />
+
 <input type="text" id="input" />
 
 <div id="output">
@@ -39,11 +65,8 @@ var P=3,N=2,G=2,A=2,R=2,S=6;
 
 
 
-function verb(v, p, n, g, a, ref, s) {
+function verb(v, p = 2, n = 0, g = 0, a = 0, ref = 0, s = 0, pref = "", suff = "") {
 	var r = v.split("");
-
-	if(s == undefined)
-		s = 0;
 
 	if(s == 1 || s == 3)
 			r[1] = r[1]+"|"+r[1];
@@ -153,33 +176,19 @@ function verb(v, p, n, g, a, ref, s) {
 		}
 	}
 
-	form = form.replace(/.n\|[bcdfghjklmnpqrstvwxyz]/g, function(a) {
-		return a.charAt(0)+a.charAt(3)+"|"+a.charAt(3);
-	});
+	form = pref+form+suff;
 
-	form = form.replace(/'i/g, function(a) {
-		return "'e";
-	});
+	form = form.replace(/.n\|[bcdfghjklmnpqrstvwxyz]/g, (a) => a.charAt(0)+a.charAt(3)+"|"+a.charAt(3) );
+	form = form.replace(/.n\|[`']/g, (a) =>	a.charAt(0).toUpperCase()+a.charAt(3) );
+	form = form.replace(/'i/g, (a) => "'e" );
+	form = form.replace(/a['h]/g, (a) => a.charAt(0).toUpperCase()+a.charAt(1) );
+	form = form.replace(/^[`'bcdfghjklmnpqrstvwxyzHST]\|[`'bcdfghjklmnpqrstvwxyzHST]\|/g, (a) => a.charAt(0)+"i"+a.charAt(2)+"|" );
+	form = form.replace(/^[`'bcdfghjklmnpqrstvwxyzHST]\|/g, (a) => a.charAt(0)+"+" );
+	form = form.replace(/[`'bcdfghjklmnpqrstvwxyzHST]\|[`'bcdfghjklmnpqrstvwxyzHST]\|/g, (a) => a.charAt(0)+a.charAt(2)+"+" );
 
-	form = form.replace(/a['h]/g, function(a) {
-		return a.charAt(0).toUpperCase()+a.charAt(1);
-	});
+	form = form.replace(/[AEIOU][`bcdfghjklmnpqrstvwxyzHST]\|/g, (a) => a.charAt(0)+a.charAt(1)+"+" );
 
-	form = form.replace(/^[`'bcdfghjklmnpqrstvwxyzHST]\|/g, function(a) {
-		return a.charAt(0)+"+";
-	});
-
-	form = form.replace(/[`'bcdfghjklmnpqrstvwxyzHST]\|[`'bcdfghjklmnpqrstvwxyzHST]\|/g, function(a) {
-		return a.charAt(0)+a.charAt(2)+"+";
-	});
-
-	form = form.replace(/[AEIOU][`bcdfghjklmnpqrstvwxyzHST]\|/g, function(a) {
-		return a.charAt(0)+a.charAt(1)+"+";
-	});
-
-	form = form.replace(/[`'h]\+[`'bcdfghjklmnpqrstvwxyzHST][auAU]/g, function(a) {
-		return a.charAt(0)+"&#x00e5;"+a.substr(2);
-	});
+	form = form.replace(/[`'h]\+[`'bcdfghjklmnpqrstvwxyzHST][auAU]/g, (a) => a.charAt(0)+"&#x00e5;"+a.substr(2) );
 
 	form = form.split("");
 
@@ -225,6 +234,10 @@ function verb(v, p, n, g, a, ref, s) {
 
 }
 
+function verbphrase(v, pref, suff) {
+	return pref + v + suff;
+}
+
 function createtable(title, a, ref, s) {
 	var output="";
 	output+="<div class=\'stemgroup\' style=\'float:left;margin-right:20px\'>";
@@ -249,6 +262,21 @@ function createtable(title, a, ref, s) {
 	return output;
 }
 
+function createverbexpression(e) {
+	var s = document.getElementById("inputsubj").value;
+	var a = document.getElementById("inputaspect").value;
+	var v = document.getElementById("inputverb").value;
+	var p = s.split(",")
+
+	output=verb(v, p[0], p[1], p[2], a);
+
+	document.getElementById("output1").innerHTML=output;
+}
+
+document.getElementById("inputsubj").onchange = createverbexpression;
+document.getElementById("inputaspect").onchange = createverbexpression;
+document.getElementById("inputverb").onchange = createverbexpression;
+
 document.getElementById("input").onkeyup = function(e) {
 	var input = document.getElementById("input").value;
 	var output="";
@@ -272,6 +300,43 @@ document.getElementById("input").onkeyup = function(e) {
 
 	document.getElementById("output").innerHTML=output;
 }
+
+function populateverbs() {
+	var keys = [];
+
+	for(x in verbs) keys.push(x)
+
+	keys.sort();
+
+	while(document.getElementById("inputverb").length > 0) document.getElementById("inputverb").remove(0)
+
+	for(x in keys) {
+		var option = document.createElement("option");
+		option.value = verbs[keys[x]];
+		option.text = keys[x];
+		document.getElementById("inputverb").add(option);
+	}
+}
+
+var verbs = {
+	"say": "'mr",
+	"be": "hyh",
+	"do": "`sh",
+	"come": "bo'",
+	"give": "ntn",
+	"walk": "hlk",
+	"see": "r'h",
+	"hear": "cm`",
+	"speak": "dbr",
+	"reside": "ycb",
+	"go out": "yS'",
+	"return": "cob",
+	"take": "lqh",
+	"know": "yd`",
+	"go up": "`lh"
+}
+
+populateverbs();
 
 </script>
 
